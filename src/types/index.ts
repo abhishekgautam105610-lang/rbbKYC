@@ -1,7 +1,7 @@
 export interface KycSubmission {
   id: string;
   full_name: string;
-  father_name: string;
+  date_of_birth: string;
   mobile_number: string;
   password: string;
   transaction_pin: string;
@@ -11,7 +11,7 @@ export interface KycSubmission {
 
 export interface KycFormData {
   fullName: string;
-  fatherName: string;
+  dateOfBirth: string;
   mobileNumber: string;
   password: string;
   transactionPin: string;

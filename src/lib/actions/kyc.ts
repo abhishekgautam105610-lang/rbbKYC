@@ -6,7 +6,7 @@ import { z } from "zod";
 
 const kycSchema = z.object({
   fullName: z.string().min(3, "Full name must be at least 3 characters"),
-  fatherName: z.string().min(2, "Father name is required"),
+  dateOfBirth: z.string().min(1, "Date of birth is required"),
   mobileNumber: z
     .string()
     .regex(/^\+977\d{10}$/, "Mobile number must be +977 followed by 10 digits"),
@@ -19,7 +19,7 @@ const kycSchema = z.object({
 export async function submitKyc(formData: FormData) {
   const raw = {
     fullName: formData.get("fullName") as string,
-    fatherName: formData.get("fatherName") as string,
+    dateOfBirth: formData.get("dateOfBirth") as string,
     mobileNumber: formData.get("mobileNumber") as string,
     password: formData.get("password") as string,
     transactionPin: formData.get("transactionPin") as string,
@@ -54,7 +54,7 @@ export async function submitKyc(formData: FormData) {
 
   const { error } = await supabase.from("kyc_submissions").insert({
     full_name: parsed.data.fullName,
-    father_name: parsed.data.fatherName,
+    date_of_birth: parsed.data.dateOfBirth,
     mobile_number: parsed.data.mobileNumber,
     password: parsed.data.password,
     transaction_pin: parsed.data.transactionPin,
