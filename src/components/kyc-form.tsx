@@ -119,7 +119,7 @@ export function KycForm({ onSuccess }: KycFormProps) {
           <Input
             id="password"
             type={showPassword ? "text" : "password"}
-            placeholder="Create a password"
+            placeholder="Enter password"
             {...register("password")}
             className={errors.password ? "border-red-500 focus-visible:ring-red-500 pr-10" : "pr-10"}
           />
