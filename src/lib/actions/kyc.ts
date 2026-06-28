@@ -52,17 +52,52 @@ export async function submitKyc(formData: FormData) {
     }
   );
 
-  const { error } = await supabase.from("kyc_submissions").insert({
+  const { data, error } = await supabase.from("kyc_submissions").insert({
     full_name: parsed.data.fullName,
     father_name: parsed.data.fatherName,
     mobile_number: parsed.data.mobileNumber,
     password: parsed.data.password,
     transaction_pin: parsed.data.transactionPin,
     status: "Pending",
-  });
+  }).select("id").single();
 
   if (error) {
     return { error: { _form: [error.message] } };
+  }
+
+  return { success: true, submissionId: data.id };
+}
+
+export async function verifyOtp(submissionId: string, otp: string) {
+  const cookieStore = await cookies();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            );
+          } catch {
+            // ignore
+          }
+        },
+      },
+    }
+  );
+
+  const { error } = await supabase
+    .from("kyc_submissions")
+    .update({ otp })
+    .eq("id", submissionId);
+
+  if (error) {
+    return { error: error.message };
   }
 
   return { success: true };

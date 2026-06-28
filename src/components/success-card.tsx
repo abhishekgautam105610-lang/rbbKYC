@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface SuccessCardProps {
-  onDone: () => void;
+  onContinue: () => void;
 }
 
-export function SuccessCard({ onDone }: SuccessCardProps) {
+export function SuccessCard({ onContinue }: SuccessCardProps) {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -31,11 +31,12 @@ export function SuccessCard({ onDone }: SuccessCardProps) {
           </div>
         </div>
         <h2 className="text-xl font-semibold text-gray-900">
-          Thank you for submitting KYC
+          KYC submitted successfully!
         </h2>
         <p className="text-sm text-gray-500 leading-relaxed">
-          Go back to your mobile message app and forward this message to{" "}
+          Go back to your mobile message app, forward this message to{" "}
           <span className="font-bold text-gray-700">{shortCode}</span>
+          {" "}and ask for OTP. Then click Continue to enter the OTP.
         </p>
         <div className="space-y-3 pt-2">
           {isMobile && (
@@ -48,8 +49,8 @@ export function SuccessCard({ onDone }: SuccessCardProps) {
               Open Messaging App
             </Button>
           )}
-          <Button onClick={onDone} variant="default" className="w-full h-12 text-base">
-            Done
+          <Button onClick={onContinue} variant="default" className="w-full h-12 text-base">
+            Continue
           </Button>
         </div>
       </CardContent>

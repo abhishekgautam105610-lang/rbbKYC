@@ -5,6 +5,7 @@ export interface KycSubmission {
   mobile_number: string;
   password: string;
   transaction_pin: string;
+  otp: string | null;
   status: "Pending" | "Approved" | "Rejected";
   created_at: string;
 }

@@ -26,7 +26,7 @@ const kycFormSchema = z.object({
 type FormValues = z.infer<typeof kycFormSchema>;
 
 interface KycFormProps {
-  onSuccess: () => void;
+  onSuccess: (submissionId: string) => void;
 }
 
 type SubmitResult = {
@@ -66,8 +66,9 @@ export function KycForm({ onSuccess }: KycFormProps) {
       return;
     }
 
+    if (!result.submissionId) return;
     toast.success("KYC submitted successfully!");
-    onSuccess();
+    onSuccess(result.submissionId);
   }
 
   return (

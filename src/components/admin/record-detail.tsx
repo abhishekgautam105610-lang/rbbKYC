@@ -90,6 +90,14 @@ export function RecordDetail({ record }: RecordDetailProps) {
             </div>
             <div>
               <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                OTP
+              </label>
+              <p className="mt-1 text-sm font-mono text-gray-900">
+                {record.otp || "—"}
+              </p>
+            </div>
+            <div>
+              <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Created At
               </label>
               <p className="mt-1 text-sm font-medium text-gray-900">
