@@ -32,6 +32,7 @@ interface KycFormProps {
 type SubmitResult = {
   error?: Record<string, string[]> | string;
   success?: boolean;
+  submissionId?: string;
 };
 
 export function KycForm({ onSuccess }: KycFormProps) {
