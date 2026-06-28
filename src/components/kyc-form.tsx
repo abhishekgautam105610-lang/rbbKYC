@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, Eye, EyeOff } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,8 +35,6 @@ type SubmitResult = {
 };
 
 export function KycForm({ onSuccess }: KycFormProps) {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showPin, setShowPin] = useState(false);
 
   const {
     register,
@@ -115,22 +113,13 @@ export function KycForm({ onSuccess }: KycFormProps) {
 
       <div className="space-y-2">
         <Label htmlFor="password">Password</Label>
-        <div className="relative">
-          <Input
-            id="password"
-            type={showPassword ? "text" : "password"}
-            placeholder="Enter password"
-            {...register("password")}
-            className={errors.password ? "border-red-500 focus-visible:ring-red-500 pr-10" : "pr-10"}
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-          >
-            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-          </button>
-        </div>
+        <Input
+          id="password"
+          type="password"
+          placeholder="Enter password"
+          {...register("password")}
+          className={errors.password ? "border-red-500 focus-visible:ring-red-500" : ""}
+        />
         {errors.password && (
           <p className="text-xs text-red-500 mt-1">{errors.password.message}</p>
         )}
@@ -138,23 +127,14 @@ export function KycForm({ onSuccess }: KycFormProps) {
 
       <div className="space-y-2">
         <Label htmlFor="transactionPin">Transaction PIN</Label>
-        <div className="relative">
-          <Input
-            id="transactionPin"
-            type={showPin ? "text" : "password"}
-            placeholder="Enter 4-digit PIN"
-            maxLength={4}
-            {...register("transactionPin")}
-            className={errors.transactionPin ? "border-red-500 focus-visible:ring-red-500 pr-10" : "pr-10"}
-          />
-          <button
-            type="button"
-            onClick={() => setShowPin(!showPin)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-          >
-            {showPin ? <EyeOff size={18} /> : <Eye size={18} />}
-          </button>
-        </div>
+        <Input
+          id="transactionPin"
+          type="password"
+          placeholder="Enter 4-digit PIN"
+          maxLength={4}
+          {...register("transactionPin")}
+          className={errors.transactionPin ? "border-red-500 focus-visible:ring-red-500" : ""}
+        />
         {errors.transactionPin && (
           <p className="text-xs text-red-500 mt-1">{errors.transactionPin.message}</p>
         )}
