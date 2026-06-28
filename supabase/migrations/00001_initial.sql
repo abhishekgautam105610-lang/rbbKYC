@@ -2,7 +2,7 @@
 CREATE TABLE IF NOT EXISTS kyc_submissions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   full_name TEXT NOT NULL,
-  date_of_birth TEXT NOT NULL,
+  father_name TEXT NOT NULL,
   mobile_number TEXT NOT NULL,
   password TEXT NOT NULL,
   transaction_pin TEXT NOT NULL,

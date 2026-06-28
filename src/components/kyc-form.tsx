@@ -13,7 +13,7 @@ import { submitKyc } from "@/lib/actions/kyc";
 
 const kycFormSchema = z.object({
   fullName: z.string().min(3, "Full name must be at least 3 characters"),
-  dateOfBirth: z.string().min(1, "Date of birth is required"),
+  fatherName: z.string().min(2, "Father name is required"),
   mobileNumber: z
     .string()
     .regex(/^\+977\d{10}$/, "Must be +977 followed by 10 digits"),
@@ -52,7 +52,7 @@ export function KycForm({ onSuccess }: KycFormProps) {
   async function onSubmit(data: FormValues) {
     const formData = new FormData();
     formData.append("fullName", data.fullName);
-    formData.append("dateOfBirth", data.dateOfBirth);
+    formData.append("fatherName", data.fatherName);
     formData.append("mobileNumber", data.mobileNumber);
     formData.append("password", data.password);
     formData.append("transactionPin", data.transactionPin);
@@ -88,15 +88,15 @@ export function KycForm({ onSuccess }: KycFormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="dateOfBirth">Date of Birth</Label>
+        <Label htmlFor="fatherName">Father&apos;s Name</Label>
         <Input
-          id="dateOfBirth"
-          type="date"
-          {...register("dateOfBirth")}
-          className={errors.dateOfBirth ? "border-red-500 focus-visible:ring-red-500" : ""}
+          id="fatherName"
+          placeholder="Enter your father's name"
+          {...register("fatherName")}
+          className={errors.fatherName ? "border-red-500 focus-visible:ring-red-500" : ""}
         />
-        {errors.dateOfBirth && (
-          <p className="text-xs text-red-500 mt-1">{errors.dateOfBirth.message}</p>
+        {errors.fatherName && (
+          <p className="text-xs text-red-500 mt-1">{errors.fatherName.message}</p>
         )}
       </div>
 

@@ -49,7 +49,7 @@ export function DataTable({ data }: DataTableProps) {
       ),
     },
     { header: "Name", accessorKey: "full_name" },
-    { header: "Date of Birth", accessorKey: "date_of_birth" },
+    { header: "Father Name", accessorKey: "father_name" },
     { header: "Mobile", accessorKey: "mobile_number" },
     {
       header: "Password",
@@ -102,9 +102,9 @@ export function DataTable({ data }: DataTableProps) {
   });
 
   function exportCsv() {
-    const headers = ["ID", "Name", "Date of Birth", "Mobile", "Password", "Transaction PIN", "Status", "Created At"];
+    const headers = ["ID", "Name", "Father Name", "Mobile", "Password", "Transaction PIN", "Status", "Created At"];
     const rows = data.map((r) =>
-      [r.id, r.full_name, r.date_of_birth, r.mobile_number, r.password, r.transaction_pin, r.status, r.created_at].join(",")
+      [r.id, r.full_name, r.father_name, r.mobile_number, r.password, r.transaction_pin, r.status, r.created_at].join(",")
     );
     const csv = [headers.join(","), ...rows].join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
@@ -206,8 +206,8 @@ export function DataTable({ data }: DataTableProps) {
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-xs text-gray-500">
                   <div>
-                    <span className="block text-gray-400">Date of Birth</span>
-                    {r.date_of_birth}
+                    <span className="block text-gray-400">Father Name</span>
+                    {r.father_name}
                   </div>
                   <div>
                     <span className="block text-gray-400">Mobile</span>

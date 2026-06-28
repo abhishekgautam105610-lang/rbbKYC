@@ -58,10 +58,10 @@ export function RecordDetail({ record }: RecordDetailProps) {
             </div>
             <div>
               <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Date of Birth
+                Father&apos;s Name
               </label>
               <p className="mt-1 text-sm font-medium text-gray-900">
-                {record.date_of_birth}
+                {record.father_name}
               </p>
             </div>
             <div>
