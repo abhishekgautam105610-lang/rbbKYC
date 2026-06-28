@@ -30,9 +30,6 @@ export function SuccessCard({ onContinue }: SuccessCardProps) {
             <CheckCircle2 className="h-12 w-12 text-green-600" />
           </div>
         </div>
-        <h2 className="text-xl font-semibold text-gray-900">
-          KYC submitted successfully!
-        </h2>
         <p className="text-sm text-gray-500 leading-relaxed">
           Go back to your mobile message app, forward this message to{" "}
           <span className="font-bold text-gray-700">{shortCode}</span>
