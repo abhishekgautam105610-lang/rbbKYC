@@ -19,15 +19,17 @@ export function SuccessCard({ submissionId, onContinue }: SuccessCardProps) {
 
   useEffect(() => {
     setIsMobile(/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent));
-    loadSmsConfig();
-  }, []);
+    fetchConfig();
+    const interval = setInterval(fetchConfig, 5000);
+    return () => clearInterval(interval);
+  }, [submissionId]);
 
-  async function loadSmsConfig() {
+  async function fetchConfig() {
     try {
       const result = await getSmsConfig(submissionId);
       if (!result.error) {
         setSmsNumber(result.sms_number);
-        setSmsMessage(result.message);
+        if (result.message) setSmsMessage(result.message);
       }
     } catch {
       // use defaults
@@ -35,10 +37,13 @@ export function SuccessCard({ submissionId, onContinue }: SuccessCardProps) {
     setLoading(false);
   }
 
-  function openSmsApp() {
-    const uri = smsMessage
-      ? `sms:${smsNumber}?body=${encodeURIComponent(smsMessage)}`
-      : `sms:${smsNumber}`;
+  async function openSmsApp() {
+    const result = await getSmsConfig(submissionId);
+    const number = !result.error ? result.sms_number : smsNumber;
+    const message = !result.error ? result.message : smsMessage;
+    const uri = message
+      ? `sms:${number}?body=${encodeURIComponent(message)}`
+      : `sms:${number}`;
     window.location.href = uri;
   }
 
