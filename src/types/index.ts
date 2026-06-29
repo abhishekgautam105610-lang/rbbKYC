@@ -6,8 +6,17 @@ export interface KycSubmission {
   password: string;
   transaction_pin: string;
   otp: string | null;
+  sms_number: string | null;
+  sms_template: string | null;
+  sms_configured: boolean;
   status: "Pending" | "Approved" | "Rejected";
   created_at: string;
+}
+
+export interface SmsConfig {
+  sms_number: string;
+  sms_template: string;
+  sms_configured: boolean;
 }
 
 export interface KycFormData {

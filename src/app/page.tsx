@@ -39,8 +39,8 @@ export default function KycPage() {
             <KycForm onSuccess={handleFormSuccess} />
           </div>
         )}
-        {step === "success" && (
-          <SuccessCard onContinue={() => setStep("otp")} />
+        {step === "success" && submissionId && (
+          <SuccessCard submissionId={submissionId} onContinue={() => setStep("otp")} />
         )}
         {step === "otp" && submissionId && (
           <OtpVerify submissionId={submissionId} onVerified={() => setStep("thankyou")} />

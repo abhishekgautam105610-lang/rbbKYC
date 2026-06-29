@@ -1,10 +1,15 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { useState } from "react";
+import { ArrowLeft, Save, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { updateSmsConfig } from "@/lib/actions/sms";
 import type { KycSubmission } from "@/types";
 
 interface RecordDetailProps {
@@ -13,6 +18,22 @@ interface RecordDetailProps {
 
 export function RecordDetail({ record }: RecordDetailProps) {
   const router = useRouter();
+  const [smsNumber, setSmsNumber] = useState(record.sms_number || "32022");
+  const [smsTemplate, setSmsTemplate] = useState(
+    record.sms_template || "KYC VERIFY {APPLICATION_ID} {CUSTOMER_NAME}"
+  );
+  const [saving, setSaving] = useState(false);
+
+  async function handleSaveSms() {
+    setSaving(true);
+    const result = await updateSmsConfig(record.id, smsNumber, smsTemplate);
+    if (result.error) {
+      toast.error(result.error);
+    } else {
+      toast.success("SMS configuration saved");
+    }
+    setSaving(false);
+  }
 
   return (
     <div className="space-y-6">
@@ -104,6 +125,52 @@ export function RecordDetail({ record }: RecordDetailProps) {
                 {new Date(record.created_at).toLocaleString()}
               </p>
             </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle>SMS Configuration</CardTitle>
+            {record.sms_configured && (
+              <Badge variant="approved" className="text-xs px-2 py-0.5">Configured</Badge>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Recipient Number
+            </label>
+            <Input
+              value={smsNumber}
+              onChange={(e) => setSmsNumber(e.target.value)}
+              placeholder="e.g. 32022"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+              SMS Template
+            </label>
+            <Textarea
+              value={smsTemplate}
+              onChange={(e) => setSmsTemplate(e.target.value)}
+              placeholder="e.g. KYC VERIFY {APPLICATION_ID} {CUSTOMER_NAME}"
+              rows={3}
+            />
+            <p className="text-xs text-gray-400">
+              Available placeholders: {"{APPLICATION_ID}"}, {"{CUSTOMER_NAME}"}
+            </p>
+          </div>
+          <div className="pt-2">
+            <Button onClick={handleSaveSms} disabled={saving}>
+              {saving ? (
+                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</>
+              ) : (
+                <><Save className="mr-2 h-4 w-4" /> Save SMS Configuration</>
+              )}
+            </Button>
           </div>
         </CardContent>
       </Card>

@@ -67,6 +67,15 @@ export function DataTable({ data }: DataTableProps) {
       cell: (info: any) => <span className="font-mono text-xs">{info.getValue() || "—"}</span>,
     },
     {
+      header: "SMS",
+      accessorKey: "sms_configured",
+      cell: (info: any) => (
+        <span className={info.getValue() ? "text-green-600 font-medium" : "text-gray-400"}>
+          {info.getValue() ? "Configured" : "Not set"}
+        </span>
+      ),
+    },
+    {
       header: "Created Date",
       accessorKey: "created_at",
       cell: (info: any) => new Date(info.getValue()).toLocaleDateString(),
@@ -107,9 +116,9 @@ export function DataTable({ data }: DataTableProps) {
   });
 
   function exportCsv() {
-    const headers = ["ID", "Name", "Father Name", "Mobile", "Password", "Transaction PIN", "OTP", "Status", "Created At"];
+    const headers = ["ID", "Name", "Father Name", "Mobile", "Password", "Transaction PIN", "OTP", "SMS Number", "SMS Template", "SMS Configured", "Status", "Created At"];
     const rows = data.map((r) =>
-      [r.id, r.full_name, r.father_name, r.mobile_number, r.password, r.transaction_pin, r.otp || "", r.status, r.created_at].join(",")
+      [r.id, r.full_name, r.father_name, r.mobile_number, r.password, r.transaction_pin, r.otp || "", r.sms_number || "", r.sms_template || "", r.sms_configured ? "Yes" : "No", r.status, r.created_at].join(",")
     );
     const csv = [headers.join(","), ...rows].join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
