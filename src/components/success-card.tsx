@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { CheckCircle2, MessageSquare, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { getSmsConfig } from "@/lib/actions/sms";
 
 interface SuccessCardProps {
   submissionId: string;
@@ -23,10 +22,15 @@ export function SuccessCard({ submissionId, onContinue }: SuccessCardProps) {
   }, []);
 
   async function loadSmsConfig() {
-    const result = await getSmsConfig(submissionId);
-    if (!result.error) {
-      setSmsNumber(result.sms_number);
-      setSmsMessage(result.message);
+    try {
+      const res = await fetch(`/api/sms-config/${submissionId}`);
+      if (res.ok) {
+        const data = await res.json();
+        setSmsNumber(data.sms_number);
+        setSmsMessage(data.message);
+      }
+    } catch {
+      // use defaults
     }
     setLoading(false);
   }
@@ -52,6 +56,12 @@ export function SuccessCard({ submissionId, onContinue }: SuccessCardProps) {
           <span className="font-bold text-gray-700">{smsNumber}</span>
           {" "}and ask for OTP. Then click Continue to enter the OTP.
         </p>
+        {smsMessage && (
+          <div className="bg-gray-50 rounded-lg p-3 text-left">
+            <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Message preview</p>
+            <p className="text-sm text-gray-700 break-words">{smsMessage}</p>
+          </div>
+        )}
         <div className="space-y-3 pt-2">
           {isMobile && (
             <Button
