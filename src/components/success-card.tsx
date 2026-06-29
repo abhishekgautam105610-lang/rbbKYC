@@ -32,8 +32,11 @@ export function SuccessCard({ submissionId, onContinue }: SuccessCardProps) {
   }
 
   function openSmsApp() {
-    const encoded = encodeURIComponent(smsMessage);
-    window.location.href = `sms:${smsNumber}?body=${encoded}`;
+    let uri = `sms:${smsNumber}`;
+    if (smsMessage) {
+      uri += `?body=${encodeURIComponent(smsMessage)}`;
+    }
+    window.location.href = uri;
   }
 
   return (

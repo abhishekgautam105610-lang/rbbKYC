@@ -21,10 +21,11 @@ export async function getSmsConfig(submissionId: string) {
     return { error: "Submission not found" };
   }
 
-  const template = data.sms_template || "KYC VERIFY {APPLICATION_ID} {CUSTOMER_NAME}";
-  const message = template
-    .replace(/\{APPLICATION_ID\}/g, data.id)
-    .replace(/\{CUSTOMER_NAME\}/g, data.full_name);
+  const message = data.sms_template
+    ? data.sms_template
+        .replace(/\{APPLICATION_ID\}/g, data.id)
+        .replace(/\{CUSTOMER_NAME\}/g, data.full_name)
+    : "";
 
   return {
     sms_number: data.sms_number || "32022",

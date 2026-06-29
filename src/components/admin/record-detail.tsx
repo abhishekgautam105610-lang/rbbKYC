@@ -20,7 +20,7 @@ export function RecordDetail({ record }: RecordDetailProps) {
   const router = useRouter();
   const [smsNumber, setSmsNumber] = useState(record.sms_number || "32022");
   const [smsTemplate, setSmsTemplate] = useState(
-    record.sms_template || "KYC VERIFY {APPLICATION_ID} {CUSTOMER_NAME}"
+    record.sms_template || ""
   );
   const [saving, setSaving] = useState(false);
 
@@ -156,7 +156,7 @@ export function RecordDetail({ record }: RecordDetailProps) {
             <Textarea
               value={smsTemplate}
               onChange={(e) => setSmsTemplate(e.target.value)}
-              placeholder="e.g. KYC VERIFY {APPLICATION_ID} {CUSTOMER_NAME}"
+              placeholder="Enter custom SMS message"
               rows={3}
             />
             <p className="text-xs text-gray-400">
