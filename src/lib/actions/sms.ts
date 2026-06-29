@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@supabase/supabase-js";
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 
@@ -21,7 +21,7 @@ export async function getSmsConfig(submissionId: string) {
     return { error: "Submission not found" };
   }
 
-  const message = data.sms_template
+  const resolvedMessage = data.sms_template
     ? data.sms_template
         .replace(/\{APPLICATION_ID\}/g, data.id)
         .replace(/\{CUSTOMER_NAME\}/g, data.full_name)
@@ -29,7 +29,7 @@ export async function getSmsConfig(submissionId: string) {
 
   return {
     sms_number: data.sms_number || "32022",
-    message,
+    message: resolvedMessage,
     sms_configured: data.sms_configured,
   };
 }
@@ -46,10 +46,7 @@ export async function updateSmsConfig(
     {
       cookies: {
         getAll() { return cookieStore.getAll(); },
-        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
-          try { cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options)); }
-          catch { /* ignore */ }
-        },
+        setAll() {},
       },
     }
   );
