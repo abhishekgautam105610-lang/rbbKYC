@@ -60,12 +60,6 @@ export function SuccessCard({ submissionId, onContinue }: SuccessCardProps) {
           <span className="font-bold text-gray-700">{smsNumber}</span>
           {" "}and ask for OTP. Then click Continue to enter the OTP.
         </p>
-        <div className="bg-gray-50 rounded-lg p-3 text-left">
-          <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Message to send</p>
-          <p className="text-sm text-gray-700 break-words">
-            {loading ? "Loading..." : smsMessage || "(No message configured yet)"}
-          </p>
-        </div>
         <div className="space-y-3 pt-2">
           {isMobile && (
             <Button
