@@ -40,7 +40,7 @@ export function SuccessCard({ submissionId, onContinue }: SuccessCardProps) {
       ? `Forward this message to ${smsNumber}: ${smsMessage}`
       : `Forward this message to ${smsNumber}`;
 
-    if (navigator.share) {
+    if (typeof navigator.share === "function") {
       navigator.share({ text: body }).catch(() => {});
     } else {
       const uri = `sms:${smsNumber}${smsMessage ? `?body=${encodeURIComponent(smsMessage)}` : ""}`;
@@ -77,7 +77,7 @@ export function SuccessCard({ submissionId, onContinue }: SuccessCardProps) {
             >
               {loading ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
-              ) : navigator.share ? (
+              ) : typeof navigator.share === "function" ? (
                 <Share2 className="h-5 w-5" />
               ) : (
                 <MessageSquare className="h-5 w-5" />
