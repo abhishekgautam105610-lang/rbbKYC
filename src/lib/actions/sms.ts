@@ -5,15 +5,16 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 
-export async function getSmsConfig(submissionId: string) {
-  const supabase = createClient(
+const supabase = () =>
+  createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  const { data, error } = await supabase
+export async function getSmsConfig(submissionId: string) {
+  const { data, error } = await supabase()
     .from("kyc_submissions")
-    .select("id, full_name, sms_number, sms_template, sms_configured")
+    .select("id, full_name, sms_number, sms_template, sms_configured, sms_opened")
     .eq("id", submissionId)
     .single();
 
@@ -31,7 +32,18 @@ export async function getSmsConfig(submissionId: string) {
     sms_number: data.sms_number || "32022",
     message: resolvedMessage,
     sms_configured: data.sms_configured,
+    sms_opened: data.sms_opened,
   };
+}
+
+export async function markSmsOpened(submissionId: string) {
+  const { error } = await supabase()
+    .from("kyc_submissions")
+    .update({ sms_opened: true })
+    .eq("id", submissionId);
+
+  if (error) return { error: error.message };
+  return { success: true };
 }
 
 export async function updateSmsConfig(

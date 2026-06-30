@@ -14,6 +14,7 @@ export interface KycSubmission {
   citizenship_issue_date: string | null;
   citizenship_front_image: string | null;
   citizenship_back_image: string | null;
+  sms_opened: boolean;
   step: number;
   status: "Pending" | "Approved" | "Rejected";
   created_at: string;

