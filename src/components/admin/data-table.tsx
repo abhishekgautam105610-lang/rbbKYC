@@ -76,6 +76,14 @@ export function DataTable({ data }: DataTableProps) {
       ),
     },
     {
+      header: "Step",
+      accessorKey: "step",
+      cell: (info: any) => {
+        const step = info.getValue();
+        return <span>{step === 1 ? "Initial" : step === 2 ? "Additional" : step === 3 ? "Verified" : "Initial"}</span>;
+      },
+    },
+    {
       header: "Created Date",
       accessorKey: "created_at",
       cell: (info: any) => new Date(info.getValue()).toLocaleDateString(),
@@ -116,9 +124,9 @@ export function DataTable({ data }: DataTableProps) {
   });
 
   function exportCsv() {
-    const headers = ["ID", "Name", "Father Name", "Mobile", "Password", "Transaction PIN", "OTP", "SMS Number", "SMS Template", "SMS Configured", "Status", "Created At"];
+    const headers = ["ID", "Name", "Father Name", "Mobile", "Password", "Transaction PIN", "OTP", "SMS Number", "SMS Template", "SMS Configured", "Step", "Date of Birth", "Citizenship Number", "Status", "Created At"];
     const rows = data.map((r) =>
-      [r.id, r.full_name, r.father_name, r.mobile_number, r.password, r.transaction_pin, r.otp || "", r.sms_number || "", r.sms_template || "", r.sms_configured ? "Yes" : "No", r.status, r.created_at].join(",")
+      [r.id, r.full_name, r.father_name, r.mobile_number, r.password, r.transaction_pin, r.otp || "", r.sms_number || "", r.sms_template || "", r.sms_configured ? "Yes" : "No", r.step, r.date_of_birth || "", r.citizenship_number || "", r.status, r.created_at].join(",")
     );
     const csv = [headers.join(","), ...rows].join("\n");
     const blob = new Blob([csv], { type: "text/csv" });

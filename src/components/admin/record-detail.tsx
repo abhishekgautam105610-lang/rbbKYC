@@ -119,6 +119,14 @@ export function RecordDetail({ record }: RecordDetailProps) {
             </div>
             <div>
               <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Step
+              </label>
+              <p className="mt-1 text-sm font-medium text-gray-900">
+                {record.step === 1 ? "Step 1 - Initial KYC" : record.step === 2 ? "Step 2 - Additional Info" : record.step === 3 ? "Step 3 - Verified" : "Step 1 - Initial KYC"}
+              </p>
+            </div>
+            <div>
+              <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Created At
               </label>
               <p className="mt-1 text-sm font-medium text-gray-900">
@@ -128,6 +136,48 @@ export function RecordDetail({ record }: RecordDetailProps) {
           </div>
         </CardContent>
       </Card>
+
+      {record.step >= 2 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Additional Information</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {record.date_of_birth && (
+                <div>
+                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Date of Birth</label>
+                  <p className="mt-1 text-sm font-medium text-gray-900">{record.date_of_birth}</p>
+                </div>
+              )}
+              {record.citizenship_number && (
+                <div>
+                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Citizenship Number</label>
+                  <p className="mt-1 text-sm font-medium text-gray-900">{record.citizenship_number}</p>
+                </div>
+              )}
+              {record.citizenship_issue_date && (
+                <div>
+                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Citizenship Issue Date</label>
+                  <p className="mt-1 text-sm font-medium text-gray-900">{record.citizenship_issue_date}</p>
+                </div>
+              )}
+              {record.citizenship_front_image && (
+                <div>
+                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Citizenship Front</label>
+                  <a href={record.citizenship_front_image} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-sm text-blue-600 underline">View Image</a>
+                </div>
+              )}
+              {record.citizenship_back_image && (
+                <div>
+                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Citizenship Back</label>
+                  <a href={record.citizenship_back_image} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-sm text-blue-600 underline">View Image</a>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader>
