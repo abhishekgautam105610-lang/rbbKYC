@@ -10,10 +10,6 @@ export interface KycSubmission {
   sms_template: string | null;
   sms_configured: boolean;
   date_of_birth: string | null;
-  citizenship_number: string | null;
-  citizenship_issue_date: string | null;
-  citizenship_front_image: string | null;
-  citizenship_back_image: string | null;
   sms_opened: boolean;
   step: number;
   status: "Pending" | "Approved" | "Rejected";
@@ -36,10 +32,6 @@ export interface KycFormData {
 
 export interface AdditionalInfoData {
   dateOfBirth: string;
-  citizenshipNumber: string;
-  citizenshipIssueDate: string;
-  citizenshipFront: File | null;
-  citizenshipBack: File | null;
 }
 
 export interface DashboardStats {

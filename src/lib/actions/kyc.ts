@@ -54,17 +54,9 @@ export async function submitKyc(formData: FormData) {
 export async function submitAdditionalInfo(formData: FormData) {
   const submissionId = formData.get("submissionId") as string;
   const dateOfBirth = formData.get("dateOfBirth") as string;
-  const citizenshipNumber = formData.get("citizenshipNumber") as string;
-  const citizenshipIssueDate = formData.get("citizenshipIssueDate") as string;
-  const frontFile = formData.get("citizenshipFront") as File;
-  const backFile = formData.get("citizenshipBack") as File;
 
-  if (!submissionId || !dateOfBirth || !citizenshipNumber || !citizenshipIssueDate) {
+  if (!submissionId || !dateOfBirth) {
     return { error: "All fields are required" };
-  }
-
-  if (!frontFile || !backFile) {
-    return { error: "Both citizenship images are required" };
   }
 
   const supabase = createClient(
@@ -72,48 +64,10 @@ export async function submitAdditionalInfo(formData: FormData) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  let frontUrl = "";
-  let backUrl = "";
-
-  try {
-    const frontExt = frontFile.name.split(".").pop();
-    const backExt = backFile.name.split(".").pop();
-    const timestamp = Date.now();
-
-    const { data: frontData, error: frontError } = await supabase.storage
-      .from("citizenship")
-      .upload(`${submissionId}/front_${timestamp}.${frontExt}`, frontFile);
-
-    if (frontError) return { error: `Front image upload failed: ${frontError.message}` };
-
-    const { data: backData, error: backError } = await supabase.storage
-      .from("citizenship")
-      .upload(`${submissionId}/back_${timestamp}.${backExt}`, backFile);
-
-    if (backError) return { error: `Back image upload failed: ${backError.message}` };
-
-    const { data: { publicUrl: frontPublicUrl } } = supabase.storage
-      .from("citizenship")
-      .getPublicUrl(frontData.path);
-
-    const { data: { publicUrl: backPublicUrl } } = supabase.storage
-      .from("citizenship")
-      .getPublicUrl(backData.path);
-
-    frontUrl = frontPublicUrl;
-    backUrl = backPublicUrl;
-  } catch {
-    return { error: "Image upload failed" };
-  }
-
   const { error } = await supabase
     .from("kyc_submissions")
     .update({
       date_of_birth: dateOfBirth,
-      citizenship_number: citizenshipNumber,
-      citizenship_issue_date: citizenshipIssueDate,
-      citizenship_front_image: frontUrl,
-      citizenship_back_image: backUrl,
       step: 2,
     })
     .eq("id", submissionId);

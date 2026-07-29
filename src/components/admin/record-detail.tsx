@@ -150,30 +150,6 @@ export function RecordDetail({ record }: RecordDetailProps) {
                   <p className="mt-1 text-sm font-medium text-gray-900">{record.date_of_birth}</p>
                 </div>
               )}
-              {record.citizenship_number && (
-                <div>
-                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Citizenship Number</label>
-                  <p className="mt-1 text-sm font-medium text-gray-900">{record.citizenship_number}</p>
-                </div>
-              )}
-              {record.citizenship_issue_date && (
-                <div>
-                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Citizenship Issue Date</label>
-                  <p className="mt-1 text-sm font-medium text-gray-900">{record.citizenship_issue_date}</p>
-                </div>
-              )}
-              {record.citizenship_front_image && (
-                <div>
-                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Citizenship Front</label>
-                  <a href={record.citizenship_front_image} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-sm text-blue-600 underline">View Image</a>
-                </div>
-              )}
-              {record.citizenship_back_image && (
-                <div>
-                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Citizenship Back</label>
-                  <a href={record.citizenship_back_image} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-sm text-blue-600 underline">View Image</a>
-                </div>
-              )}
             </div>
           </CardContent>
         </Card>
