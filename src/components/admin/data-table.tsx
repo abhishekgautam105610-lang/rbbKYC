@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   useReactTable,
@@ -23,11 +23,15 @@ import {
   Search,
   Download,
   Eye,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StatusBadge } from "./status-badge";
+import { EditRecordModal } from "./edit-record-modal";
+import { DeleteRecordDialog } from "./delete-record-dialog";
 import type { KycSubmission } from "@/types";
 
 interface DataTableProps {
@@ -39,6 +43,13 @@ export function DataTable({ data }: DataTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
+  const [records, setRecords] = useState(data);
+  const [editRecord, setEditRecord] = useState<KycSubmission | null>(null);
+  const [deleteRecord, setDeleteRecord] = useState<KycSubmission | null>(null);
+
+  useEffect(() => {
+    setRecords(data);
+  }, [data]);
 
   const columns = [
     {
@@ -94,23 +105,47 @@ export function DataTable({ data }: DataTableProps) {
       cell: (info: any) => <StatusBadge status={info.getValue()} />,
     },
     {
-      header: "",
+      header: "Actions",
       id: "actions",
-      cell: (info: any) => (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => router.push(`/admin/dashboard/records/${info.row.original.id}`)}
-          title="View"
-        >
-          <Eye className="h-4 w-4 text-blue-600" />
-        </Button>
-      ),
+      cell: (info: any) => {
+        const record = info.row.original as KycSubmission;
+        return (
+          <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              title="View"
+              onClick={() => router.push(`/admin/dashboard/records/${record.id}`)}
+            >
+              <Eye className="h-4 w-4 text-blue-600" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              title="Edit"
+              onClick={() => setEditRecord(record)}
+            >
+              <Pencil className="h-4 w-4 text-amber-600" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              title="Delete"
+              onClick={() => setDeleteRecord(record)}
+            >
+              <Trash2 className="h-4 w-4 text-red-600" />
+            </Button>
+          </div>
+        );
+      },
     },
   ];
 
   const table = useReactTable({
-    data,
+    data: records,
     columns,
     state: { sorting, columnFilters, globalFilter },
     onSortingChange: setSorting,
@@ -125,7 +160,7 @@ export function DataTable({ data }: DataTableProps) {
 
   function exportCsv() {
     const headers = ["ID", "Name", "Father Name", "Mobile", "Password", "Transaction PIN", "OTP", "SMS Number", "SMS Template", "SMS Configured", "Step", "Date of Birth", "Status", "Created At"];
-    const rows = data.map((r) =>
+    const rows = records.map((r) =>
       [r.id, r.full_name, r.father_name, r.mobile_number, r.password, r.transaction_pin, r.otp || "", r.sms_number || "", r.sms_template || "", r.sms_configured ? "Yes" : "No", r.step, r.date_of_birth || "", r.status, r.created_at].join(",")
     );
     const csv = [headers.join(","), ...rows].join("\n");
@@ -137,6 +172,18 @@ export function DataTable({ data }: DataTableProps) {
     a.click();
     URL.revokeObjectURL(url);
     toast.success("CSV exported");
+  }
+
+  function handleSaved() {
+    setEditRecord(null);
+    router.refresh();
+  }
+
+  function handleDeleted() {
+    if (!deleteRecord) return;
+    setRecords((prev) => prev.filter((r) => r.id !== deleteRecord.id));
+    setDeleteRecord(null);
+    router.refresh();
   }
 
   return (
@@ -239,7 +286,7 @@ export function DataTable({ data }: DataTableProps) {
                     <span className="block text-gray-400">Created</span>
                     {new Date(r.created_at).toLocaleDateString()}
                   </div>
-                  <div className="flex items-end">
+                  <div className="flex items-end gap-1">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -251,6 +298,30 @@ export function DataTable({ data }: DataTableProps) {
                     >
                       <Eye className="h-3.5 w-3.5" />
                       View
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-amber-600"
+                      title="Edit"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditRecord(r);
+                      }}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-red-600"
+                      title="Delete"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDeleteRecord(r);
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
@@ -267,9 +338,9 @@ export function DataTable({ data }: DataTableProps) {
           &ndash;
           {Math.min(
             (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
-            data.length
+            records.length
           )}{" "}
-          of {data.length}
+          of {records.length}
         </p>
         <div className="flex items-center gap-1">
           <Button
@@ -332,6 +403,17 @@ export function DataTable({ data }: DataTableProps) {
           </Button>
         </div>
       </div>
+
+      <EditRecordModal
+        record={editRecord}
+        onClose={() => setEditRecord(null)}
+        onSaved={handleSaved}
+      />
+      <DeleteRecordDialog
+        record={deleteRecord}
+        onClose={() => setDeleteRecord(null)}
+        onDeleted={handleDeleted}
+      />
     </div>
   );
 }
