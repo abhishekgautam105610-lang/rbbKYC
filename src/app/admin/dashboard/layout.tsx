@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { AlertTriangle } from "lucide-react";
 import { Sidebar } from "@/components/admin/sidebar";
 import { MobileSidebar } from "@/components/admin/mobile-sidebar";
 
@@ -14,22 +13,6 @@ export default function AdminDashboardLayout({
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-red-950/95 p-4">
-        <div className="w-full max-w-md rounded-2xl border-2 border-red-500 bg-white p-8 text-center shadow-2xl animate-in zoom-in duration-300">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
-            <AlertTriangle className="h-8 w-8 text-red-600" strokeWidth={2.5} />
-          </div>
-          <h1 className="text-2xl font-bold uppercase tracking-wide text-red-700">
-            High Alert
-          </h1>
-          <p className="mt-3 text-lg font-semibold text-gray-900">
-            Application need maintenance
-          </p>
-          <p className="mt-2 text-sm text-gray-500">
-            The application is currently under maintenance. Please try again later.
-          </p>
-        </div>
-      </div>
       <Sidebar />
       <MobileSidebar open={mobileOpen} onClose={() => setMobileOpen(false)} />
       <button
